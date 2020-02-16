@@ -1,0 +1,10 @@
+# ---
+
+# db_pass: "password"
+# db_user: "wpuser"
+# domain": "idodd"
+# db_name: "wp_{{ domain }}"
+# root_db_pass: "0JW[?r9s#LJ27oh"
+
+
+# #roles: "../../server

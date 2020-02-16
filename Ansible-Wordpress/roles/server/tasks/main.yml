@@ -1,0 +1,96 @@
+---
+  # tasks file for wordpress
+  - name: install dependencies
+    package:
+      name:
+        - httpd 
+        - mariadb 
+        - mariadb-server 
+        - php 
+        - php-pdo_mysql 
+        - php-xml 
+        - php-gd 
+        - wget 
+        - nano
+        - policycoreutils-python
+        - MySQL-python
+      state: installed
+  
+  - name: create wordpress dir
+    file:
+      path: "/var/www/html/idodd"
+      state: directory
+      owner: apache
+      group: apache
+      mode: 0755
+  
+  - name: get wordpress
+    unarchive:
+      src: https://wordpress.org/latest.tar.gz
+      dest: /var/www/html/idodd
+      extra_opts: --strip=1
+      remote_src: yes
+      owner: apache
+      group: apache
+    notify: get API information
+  
+  - name: start mariadb
+    service:
+      name: mariadb
+      state: started
+      enabled: true
+  
+  - name: create database
+    mysql_db:
+      name: "wpdatabase"
+      state: present
+  
+  - name: create database user
+    mysql_user:
+      name: "wpidodd"
+      password: "Kr!shna5"
+      priv: 'wpdatabase.*:ALL,GRANT'
+    notify: secure mariadb
+  
+  - name: run API handler now
+    meta: flush_handlers
+  
+  - name: set mariadb root password
+    mysql_user:
+      name: root
+      password: "Kr!shna5"
+  
+  - name: copy template
+    template:
+      src: wp-config.j2
+      dest: /var/www/html/idodd/wp-config.php
+  
+  - name: copy httpd template
+    template:
+      src: httpd.j2
+      dest: /etc/httpd/conf/httpd.conf
+      owner: root
+      group: root
+      mode: 0644
+  
+  - name: start httpd
+    service:
+      name: httpd
+      state: started
+      enabled: true
+  
+  - name: ensure firewalld is running
+    service:
+      name: firewalld
+      state: started
+      enabled: true
+  
+  - name: open firewall services
+    firewalld:
+      service: "{{ item }}"
+      permanent: true
+      state: enabled
+      immediate: true
+    with_items:
+      - https
+      - http

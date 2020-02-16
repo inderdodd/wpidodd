@@ -1,0 +1,15 @@
+---
+    # handlers file for wordpress
+    - name: get API information
+      uri: 
+        url: "https://api.wordpress.org/secret-key/1.1/salt/"
+        return_content: yes
+      register: api_info
+    
+    - name: secure mariadb
+      command: 'mysql -ne "{{ item }}"'
+      with_items:
+        - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+        - DELETE FROM mysql.user WHERE User='';
+        - DROP DATABASE test;
+        - FLUSH PRIVILEGES;
