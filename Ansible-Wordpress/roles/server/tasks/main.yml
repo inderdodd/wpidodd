@@ -48,7 +48,7 @@
   - name: create database user
     mysql_user:
       name: "wpidodd"
-      password: "Kr!shna5"
+      password: "*****"
       priv: 'wpdatabase.*:ALL,GRANT'
     notify: secure mariadb
   
