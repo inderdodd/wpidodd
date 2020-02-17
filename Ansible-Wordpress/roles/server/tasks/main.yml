@@ -58,7 +58,7 @@
   - name: set mariadb root password
     mysql_user:
       name: root
-      password: "Kr!shna5"
+      password: "******"
   
   - name: copy template
     template:
